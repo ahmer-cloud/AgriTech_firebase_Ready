@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriTech - Weather Forecast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-green: #52B788;
+            --text-light: #F4F7F5;
+            --text-muted: #B0C4B1;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { overflow-x: hidden; background: #0B1912; color: var(--text-light); padding: 1.5rem; min-height: 100vh; }
+
+        .header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.8rem; }
+        .back-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+            transition: 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.15); }
+        .back-btn svg { width: 20px; height: 20px; fill: #fff; }
+
+        /* Animated Rain Hero Card */
+        .today-banner {
+            position: relative;
+            background: linear-gradient(135deg, #183329 0%, #0e241c 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.2rem 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: 0 16px 36px rgba(0,0,0,0.4);
+        }
+
+        #rainCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.75;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .location-tag {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .today-banner h1 {
+            font-size: 3.6rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin: 0.4rem 0;
+            color: #ffffff;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .weather-desc {
+            font-size: 0.95rem;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .section-title {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* Spaced-Out Hourly Forecast with breathing room for hover */
+        .hourly-container {
+            display: flex;
+            gap: 1.1rem;
+            overflow-x: auto;
+            padding-top: 10px;
+            padding-bottom: 1rem;
+            padding-left: 4px;
+            padding-right: 4px;
+            margin-top: -6px;
+            scrollbar-width: none;
+        }
+        .hourly-container::-webkit-scrollbar { display: none; }
+
+        .hourly-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            min-width: 95px;
+            padding: 1.1rem 0.8rem;
+            border-radius: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+            backdrop-filter: blur(14px);
+            transition: transform 0.2s;
+        }
+        .hourly-card:hover { transform: translateY(-4px); border-color: var(--accent-green); }
+        .hourly-card span { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
+        .hourly-card strong { font-size: 1.25rem; font-weight: 700; color: #fff; }
+        .chance { font-size: 0.72rem; color: #74C69D; font-weight: 600; }
+
+        /* Complete 7-Day Week Outlook */
+        .daily-list {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 0.8rem 1.4rem;
+            margin-top: 1rem;
+            backdrop-filter: blur(14px);
+        }
+        .daily-item {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.92rem;
+        }
+        .daily-item:last-child { border-bottom: none; }
+        .daily-item .day-title { font-weight: 600; color: #fff; }
+        .daily-item .temp-range { text-align: center; color: var(--text-light); }
+        .daily-item .rain-stat { text-align: right; color: var(--accent-green); font-weight: 600; font-size: 0.82rem; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="05_dashboard.html" class="back-btn" title="Back to Dashboard">
+            <svg viewBox="0 0 24 24"><path d="M20,11H7.83L13.42,5.41L12,4L4,12L12,20L13.41,18.59L7.83,13H20V11Z"/></svg>
+        </a>
+        <h2 style="font-size: 1.25rem;">Forecast Details</h2>
+    </div>
+
+    <!-- Active Rain Animated Banner -->
+    <div class="today-banner">
+        <canvas id="rainCanvas"></canvas>
+        <div class="banner-content">
+            <p class="location-tag" id="wx-location">📍 Locating...</p>
+            <h1 id="wx-hero-temp">--°C</h1>
+            <p class="weather-desc" id="wx-hero-desc">Loading weather...</p>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 5px;" id="wx-hero-sub"></p>
+        </div>
+    </div>
+
+    <!-- Spaced Hourly Forecast -->
+    <h3 class="section-title">Hourly Forecast (Next 21 Hours)</h3>
+    <div class="hourly-container" id="wx-hourly-container">
+        <div class="hourly-card"><span>--</span><div style="font-size: 1.6rem; margin: 4px 0;">⏳</div><strong>--°</strong><div class="chance">-- rain</div></div>
+    </div>
+
+    <!-- 5-Day Outlook (free OpenWeatherMap tier gives 5 days) -->
+    <h3 class="section-title" style="margin-top: 1.8rem;">5-Day Weather Outlook</h3>
+    <div class="daily-list" id="wx-daily-list">
+        <div class="daily-item"><span class="day-title">Loading...</span><span class="temp-range">--</span><span class="rain-stat">--</span></div>
+    </div>
+
+    <!-- Rain Animation Script -->
+    <script>
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const drops = [];
+        const dropCount = 65;
+
+        for (let i = 0; i < dropCount; i++) {
+            drops.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                len: Math.random() * 16 + 10,
+                speed: Math.random() * 5 + 7,
+                opacity: Math.random() * 0.4 + 0.3
+            });
+        }
+
+        function drawRain() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(168, 218, 220, 0.6)';
+            ctx.lineWidth = 1.3;
+            ctx.lineCap = 'round';
+
+            for (let i = 0; i < drops.length; i++) {
+                const d = drops[i];
+                ctx.beginPath();
+                ctx.moveTo(d.x, d.y);
+                ctx.lineTo(d.x - 2, d.y + d.len);
+                ctx.stroke();
+
+                d.y += d.speed;
+                d.x -= 0.8;
+
+                if (d.y > canvas.height) {
+                    d.y = -20;
+                    d.x = Math.random() * (canvas.width + 50);
+                }
+            }
+            requestAnimationFrame(drawRain);
+        }
+        drawRain();
+    </script>
+
+    <!-- Live Weather Data -->
+    <script src="weather.js"></script>
+    <script>
+        (function () {
+            function fmtDay(dateStr) {
+                const d = new Date(dateStr + 'T00:00:00');
+                return d.toLocaleDateString('en-US', { weekday: 'long' });
+            }
+            function fmtHour(dt) {
+                const d = new Date(dt * 1000);
+                let h = d.getHours();
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12 || 12;
+                return h + ' ' + ampm;
+            }
+
+            fetchAgriWeather().then(function (w) {
+                const c = w.current;
+                const locEl = document.getElementById('wx-location');
+                const tempEl = document.getElementById('wx-hero-temp');
+                const descEl = document.getElementById('wx-hero-desc');
+                const subEl = document.getElementById('wx-hero-sub');
+                const hourlyEl = document.getElementById('wx-hourly-container');
+                const dailyEl = document.getElementById('wx-daily-list');
+
+                if (locEl) locEl.textContent = '📍 ' + (c.name || 'Your Location') + (c.sys && c.sys.country ? ', ' + c.sys.country : '');
+                if (tempEl) tempEl.textContent = Math.round(c.main.temp) + '°C';
+                const main = c.weather[0].main;
+                const desc = c.weather[0].description;
+                if (descEl) descEl.textContent = wxEmoji(main) + ' ' + desc.charAt(0).toUpperCase() + desc.slice(1) + ' Weather • Humidity ' + c.main.humidity + '%';
+                if (subEl) subEl.textContent = 'Feels like ' + Math.round(c.main.feels_like) + '°C • Wind ' + Math.round(c.wind.speed * 3.6) + ' km/h';
+
+                if (hourlyEl && w.hourly && w.hourly.length) {
+                    hourlyEl.innerHTML = w.hourly.map(function (item) {
+                        const pop = Math.round((item.pop || 0) * 100);
+                        return '<div class="hourly-card"><span>' + fmtHour(item.dt) + '</span>' +
+                            '<div style="font-size: 1.6rem; margin: 4px 0;">' + wxEmoji(item.weather[0].main) + '</div>' +
+                            '<strong>' + Math.round(item.main.temp) + '°</strong>' +
+                            '<div class="chance">' + pop + '% rain</div></div>';
+                    }).join('');
+                }
+
+                if (dailyEl && w.daily && w.daily.length) {
+                    dailyEl.innerHTML = w.daily.map(function (day, idx) {
+                        const label = idx === 0 ? 'Today' : fmtDay(day.date);
+                        const pop = Math.round((day.pop || 0) * 100);
+                        return '<div class="daily-item"><span class="day-title">' + label + '</span>' +
+                            '<span class="temp-range">' + wxEmoji(day.main) + ' ' + Math.round(day.max) + '° / ' + Math.round(day.min) + '°</span>' +
+                            '<span class="rain-stat">' + pop + '% rain</span></div>';
+                    }).join('');
+                }
+            }).catch(function (err) {
+                console.warn('Weather load failed:', err);
+                const descEl = document.getElementById('wx-hero-desc');
+                if (descEl) descEl.textContent = 'Weather unavailable right now';
+            });
+        })();
+    </script>
+    <script type="module" src="firebase-init.js"></script>
+    <script src="auth-guard.js"></script>
+</body>
+</html>

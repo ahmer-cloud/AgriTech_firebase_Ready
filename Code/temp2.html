@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriTech - Sign In</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2D6A4F;
+            --accent-green: #52B788;
+            --light-green: #D8F3DC;
+            --dark-bg: #0B1912;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --input-bg: rgba(255, 255, 255, 0.08);
+            --input-border: rgba(255, 255, 255, 0.15);
+            --text-light: #F4F7F5;
+            --text-muted: #B0C4B1;
+            --error-red: #E63946;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { overflow-x: hidden;
+            background: linear-gradient(135deg, #0B1912 0%, #1B4332 50%, #2D6A4F 100%);
+            min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1.5rem; color: var(--text-light);
+        }
+        .auth-container {
+            width: 100%; max-width: 420px; background: var(--card-bg); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 24px; padding: 2.2rem 1.8rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+        .auth-header { text-align: center; margin-bottom: 2rem; }
+        .logo-badge {
+            position: relative;
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            margin: 0 auto 0.8rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-badge::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(82, 183, 136, 0.35) 0%, rgba(82, 183, 136, 0) 70%);
+            z-index: 0;
+        }
+        .logo-badge img {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            object-fit: cover;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+        }
+        .brand-wordmark {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #FFFFFF;
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+        .brand-wordmark .pak-text {
+            color: var(--accent-green);
+        }
+        .brand-wordmark .i-leaf {
+            position: relative;
+            display: inline-block;
+        }
+        .brand-wordmark .i-leaf::before {
+            content: '';
+            position: absolute;
+            top: -0.26em;
+            left: 50%;
+            width: 0.36em;
+            height: 0.25em;
+            background: linear-gradient(135deg, #95E1B3, var(--accent-green));
+            border-radius: 0% 90% 0% 90%;
+            transform: translateX(-55%) rotate(-18deg);
+            transform-origin: bottom center;
+            box-shadow: 0 0 5px rgba(82, 183, 136, 0.5);
+        }
+        .auth-header h2 { font-size: 1.75rem; font-weight: 700; color: #FFFFFF; margin-bottom: 0.3rem; }
+        .auth-header p { font-size: 0.9rem; color: var(--text-muted); }
+        .auth-form { display: flex; flex-direction: column; gap: 1.2rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
+        .form-group label { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper input {
+            width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem; background: var(--input-bg);
+            border: 1px solid var(--input-border); border-radius: 14px; color: #FFFFFF; font-size: 0.95rem; outline: none;
+        }
+        .input-wrapper input:focus { border-color: var(--accent-green); background: rgba(255, 255, 255, 0.12); }
+        .input-icon { position: absolute; left: 1rem; width: 18px; height: 18px; fill: var(--text-muted); pointer-events: none; }
+        .form-options { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
+        .remember-me { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); cursor: pointer; }
+        .remember-me input[type="checkbox"] { accent-color: var(--accent-green); width: 16px; height: 16px; }
+        .forgot-pass { color: var(--accent-green); text-decoration: none; font-weight: 600; }
+        .submit-btn {
+            width: 100%; padding: 0.9rem; background: linear-gradient(135deg, var(--accent-green), var(--primary-green));
+            border: none; border-radius: 14px; color: #FFFFFF; font-size: 1rem; font-weight: 600; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(45, 106, 79, 0.3); margin-top: 0.5rem;
+        }
+        .auth-footer { text-align: center; margin-top: 1.8rem; font-size: 0.88rem; color: var(--text-muted); }
+        .auth-footer a { color: var(--accent-green); font-weight: 600; text-decoration: none; margin-left: 0.3rem; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo-badge">
+                <img src="../Images/Logo.jpeg" alt="AgriTech logo" onerror="this.src='../Images/Logo.png'">
+            </div>
+            <div class="brand-wordmark">Agr<span class="i-leaf">ı</span><span class="pak-text">Tech</span></div>
+            <h2>Welcome Back</h2>
+            <p>Sign in to continue to AgriTech</p>
+        </div>
+
+        <form class="auth-form" id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24"><path d="M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4M20,8L12,13L4,8V6L12,11L20,6V8Z"/></svg>
+                    <input type="email" id="email" placeholder="farmer@agripak.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24"><path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15C10,13.89 10.9,13 12,13M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.9 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/></svg>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember"> Remember me
+                </label>
+                <a href="03.1_forgot_password.html" class="forgot-pass">Forgot Password?</a>
+            </div>
+
+            <span class="error-text" id="signinServerError" style="display:none; color: var(--error-red); font-size: 0.85rem; margin-top: -0.6rem;"></span>
+
+            <button type="submit" class="submit-btn">Sign In &rarr;</button>
+        </form>
+
+        <div style="text-align:center; margin: 1.1rem 0 0.2rem 0; color: var(--text-muted); font-size: 0.82rem;">or</div>
+        <button type="button" id="toggleLinkLogin" style="width:100%; padding:0.8rem; background: rgba(255,255,255,0.06); border:1px solid var(--input-border); border-radius:14px; color: var(--text-light); font-size:0.9rem; font-weight:600; cursor:pointer;">
+            Sign in with email link (no password)
+        </button>
+
+        <form id="linkLoginForm" style="display:none; flex-direction:column; gap:0.9rem; margin-top:1rem;">
+            <div class="form-group">
+                <label for="linkEmail">Email Address</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24"><path d="M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4M20,8L12,13L4,8V6L12,11L20,6V8Z"/></svg>
+                    <input type="email" id="linkEmail" placeholder="farmer@agripak.com" required>
+                </div>
+            </div>
+            <span class="error-text" id="linkLoginError" style="display:none; color: var(--error-red); font-size: 0.85rem;"></span>
+            <span id="linkLoginSuccess" style="display:none; color: var(--accent-green); font-size: 0.85rem;">Login link bhej diya gaya hai — apna email check karein aur us link pe click karein.</span>
+            <button type="submit" class="submit-btn" style="margin-top:0;">Send login link</button>
+        </form>
+
+        <div class="auth-footer">
+            Don't have an account? <a href="03_signup.html">Sign Up</a>
+        </div>
+    </div>
+
+    <script type="module" src="firebase-init.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const SELECT_CROP_PAGE = '04_select_crop.html';
+            const errorBox = document.getElementById('signinServerError');
+            const submitBtn = loginForm.querySelector('.submit-btn');
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorBox.style.display = 'none';
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                if (!email || !password) return;
+
+                submitBtn.disabled = true;
+                const originalLabel = submitBtn.innerHTML;
+                submitBtn.innerHTML = 'Signing in...';
+
+                try {
+                    await window.agri.signIn(email, password);
+                    window.location.href = SELECT_CROP_PAGE;
+                } catch (err) {
+                    errorBox.textContent = window.agri.friendlyError(err);
+                    errorBox.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalLabel;
+                }
+            });
+
+            // ---- Passwordless (email link) sign-in ----
+            const toggleBtn = document.getElementById('toggleLinkLogin');
+            const linkForm = document.getElementById('linkLoginForm');
+            const linkError = document.getElementById('linkLoginError');
+            const linkSuccess = document.getElementById('linkLoginSuccess');
+
+            toggleBtn.addEventListener('click', () => {
+                const showing = linkForm.style.display === 'flex';
+                linkForm.style.display = showing ? 'none' : 'flex';
+                loginForm.style.display = showing ? 'flex' : 'none';
+                toggleBtn.textContent = showing ? 'Sign in with email link (no password)' : 'Sign in with password instead';
+            });
+
+            linkForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                linkError.style.display = 'none';
+                linkSuccess.style.display = 'none';
+                const email = document.getElementById('linkEmail').value;
+                const btn = linkForm.querySelector('.submit-btn');
+                btn.disabled = true;
+                const original = btn.innerHTML;
+                btn.innerHTML = 'Sending...';
+                try {
+                    await window.agri.sendLoginLink(email);
+                    linkSuccess.style.display = 'block';
+                } catch (err) {
+                    linkError.textContent = window.agri.friendlyError(err);
+                    linkError.style.display = 'block';
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = original;
+                }
+            });
+
+            // If this page was opened FROM the emailed sign-in link, complete it automatically.
+            window.addEventListener('agri-ready', async () => {
+                if (window.agri.isLoginLink(window.location.href)) {
+                    try {
+                        await window.agri.completeLoginLink(window.location.href);
+                        window.location.href = SELECT_CROP_PAGE;
+                    } catch (err) {
+                        errorBox.textContent = window.agri.friendlyError(err);
+                        errorBox.style.display = 'block';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
