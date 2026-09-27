@@ -30,6 +30,8 @@
             from { opacity: 0; transform: translateY(14px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Gentle staggered entrance for grid items — purely visual, doesn't
+           touch layout or markup structure. */
         .metrics-grid > *, .services-grid > *, .fields-container .field-item {
             animation: fadeSlideUp 0.4s ease both;
         }
@@ -152,8 +154,10 @@
             </div>
         </header>
 
+        <!-- Weather Hero: Rain Badge Positioned at the Right of Left Section (Before Divider) -->
         <section class="hero-banner" onclick="window.location.href='12_weather_details.html'" style="cursor: pointer; position: relative; padding: 1.4rem 1.6rem; display: flex; align-items: center;">
             
+            <!-- Left Section: Icon + Temp + (Rain) Badge at the edge -->
             <div class="weather-hero" style="border-right: 1px solid var(--card-border); padding-right: 1.6rem; display: flex; align-items: center; justify-content: space-between; gap: 1.4rem; min-width: 270px;">
                 <div style="display: flex; align-items: center; gap: 0.9rem;">
                     <div style="font-size: 2.6rem; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3)); flex-shrink: 0;" id="wx-emoji" aria-hidden="true">
@@ -165,6 +169,7 @@
                     </div>
                 </div>
 
+                <!-- Rain Box: Sits Cleanly Right Before the Divider Line -->
                 <div id="wx-rain-badge" style="
                     background: rgba(82, 183, 136, 0.18);
                     border: 1px solid var(--accent-green);
@@ -181,6 +186,7 @@
                 </div>
             </div>
 
+            <!-- Right Section: Smart Advisory trigger (opens as a popup) -->
             <button type="button" class="advisory-trigger" onclick="event.stopPropagation(); toggleAdvisoryModal();" style="flex: 1; margin-left: 1.6rem; background: rgba(82, 183, 136, 0.12); border: 1px solid rgba(82, 183, 136, 0.35); border-radius: 16px; padding: 0.8rem 1.1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; cursor: pointer; color: var(--accent-green); font-family: inherit;">
                 <span style="display:flex; align-items:center; gap:0.5rem; font-size: 0.9rem; font-weight: 700;">🌱 Smart Advisory</span>
                 <span style="font-size: 0.78rem; font-weight: 700;">تفصیل &rarr;</span>
@@ -238,6 +244,7 @@
             </a>
         </div>
 
+        <!-- Fields Status Header with Add Field Button -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3 style="font-size: 1.1rem; font-weight: 700; margin: 0;">Your Fields Status</h3>
             <button type="button" onclick="openAddFieldModal()" style="
@@ -260,10 +267,12 @@
         </div>
 
         <div class="fields-container" id="field-list" style="position: relative;">
+            <!-- Fields dynamically populated with 3-dot menus -->
         </div>  
 
         <h3 style="font-size: 1.1rem; font-weight: 700; margin-top: 1rem;">Switch Current Crop View</h3>
         <div class="fields-container" id="crop-switch-list">
+            <!-- Other crops go here -->
         </div>
     </div>
 
@@ -349,6 +358,7 @@
             }
         };
 
+        // Initialize persistent farmer fields in localStorage if not present
         function getStoredFields() {
             const raw = localStorage.getItem('agri_user_fields');
             if (!raw) {
@@ -439,6 +449,7 @@
 
         function toggleFieldMenu(menuId, event) {
             event.stopPropagation();
+            // Close other open menus
             document.querySelectorAll('.field-action-menu').forEach(menu => {
                 if (menu.id !== menuId) menu.style.display = 'none';
             });
@@ -446,6 +457,7 @@
             target.style.display = target.style.display === 'block' ? 'none' : 'block';
         }
 
+        // Global click to close floating 3-dot dropdowns
         document.addEventListener('click', () => {
             document.querySelectorAll('.field-action-menu').forEach(menu => {
                 menu.style.display = 'none';
@@ -473,6 +485,7 @@
             npkBadge.innerText = data.npkStatus;
             npkBadge.className = `metric-badge ${data.npkClass}`;
 
+            // Populate user's customized fields for the active crop
             const fieldsStore = getStoredFields();
             const currentFields = fieldsStore[currentCrop] || [];
             const list = document.getElementById('field-list');
@@ -497,6 +510,7 @@
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span class="metric-badge badge-good" style="margin-right: 4px;">Healthy</span>
                                 
+                                <!-- 3-Dot Action Button -->
                                 <button type="button" onclick="toggleFieldMenu('${menuId}', event)" style="
                                     background: rgba(255,255,255,0.06); border: 1px solid var(--card-border);
                                     border-radius: 8px; width: 32px; height: 32px; display: flex;
@@ -505,6 +519,7 @@
                                     ⋮
                                 </button>
 
+                                <!-- Dropdown Action Popup -->
                                 <div id="${menuId}" class="field-action-menu" style="
                                     display: none; position: absolute; right: 1rem; top: 3.5rem;
                                     background: #17251C; border: 1px solid rgba(230,57,70,0.5);
@@ -526,6 +541,7 @@
                 }).join('');
             }
 
+            // Populate the "Switch Current Crop View" selector below
             const switchList = document.getElementById('crop-switch-list');
             const others = Object.keys(DEFAULT_CROP_DATA).filter(k => k !== currentCrop);
             switchList.innerHTML = others.map(k => `
@@ -539,6 +555,9 @@
             `).join('');
         }
 
+        // WhatsApp-style initials: first letter of first name + first letter
+        // of last name — same logic used on the Profile page, kept in sync
+        // via the shared 'agri_profile_name' / 'agri_profile_pic' keys.
         function getInitials(fullName) {
             const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
             if (parts.length === 0) return 'U';
@@ -546,9 +565,22 @@
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         }
 
+        let currentAuthUser = undefined; // undefined = not known yet, null = guest, object = logged in
+
         function renderHeaderAvatar() {
             const avatarEl = document.getElementById('dashAvatar');
             if (!avatarEl) return;
+
+            if (currentAuthUser === null) {
+                avatarEl.innerHTML = '';
+                avatarEl.innerText = 'G';
+                if (avatarEl.classList) {
+                    avatarEl.classList.remove('avatar-pop');
+                    void avatarEl.offsetWidth;
+                    avatarEl.classList.add('avatar-pop');
+                }
+                return;
+            }
 
             let savedPic = null;
             let savedName = 'Taha Khan';
@@ -588,27 +620,52 @@
             updateDashboard();
         }
 
+        // Attach safely without being overwritten by other scripts
         window.addEventListener('DOMContentLoaded', initDashboard);
         window.addEventListener('pageshow', renderHeaderAvatar);
         window.addEventListener('focus', renderHeaderAvatar);
 
+        // Mobile/desktop browsers can restore this page from the
+        // back-forward cache (bfcache) when the user hits "back" instead of
+        // re-running window.onload — which is exactly when a profile name
+        // or picture just changed on the previous page. Re-sync whenever
+        // the page is shown, whether that's a fresh load or a bfcache
+        // restore, so the header avatar/name never look stale.
         window.addEventListener('pageshow', function (e) {
             if (e.persisted) {
                 renderHeaderAvatar();
             }
         });
 
+        // If the Profile page is open in another tab/window and the user
+        // updates their name or photo there, the browser fires a 'storage'
+        // event on every other same-site tab the moment localStorage
+        // changes — no reload needed. This is what makes the switch feel
+        // instant when someone edits their profile in one tab and just
+        // flips back to a dashboard tab that was already sitting open.
         window.addEventListener('storage', function (e) {
             if (e.key === 'agri_profile_pic' || e.key === 'agri_profile_name') {
                 renderHeaderAvatar();
             }
         });
 
+        // Belt-and-suspenders fallback: whenever this tab regains focus or
+        // becomes visible again (e.g. the user alt-tabs or switches back
+        // to an already-open dashboard tab), re-read localStorage directly.
+        // This covers any edge case where a 'storage' event doesn't fire.
         document.addEventListener('visibilitychange', function () {
             if (!document.hidden) renderHeaderAvatar();
         });
         window.addEventListener('focus', renderHeaderAvatar);
+
+        window.addEventListener('agri-ready', function () {
+            window.agri.onAuthChange(function (user) {
+                currentAuthUser = user || null;
+                renderHeaderAvatar();
+            });
+        });
     </script>
+    <!-- Add Field In-App Modal -->
     <div class="modal-overlay" id="add-field-modal" onclick="closeAddFieldModal()">
         <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 420px; text-align: left;">
             <span class="modal-close" onclick="closeAddFieldModal()">&times;</span>
@@ -646,9 +703,11 @@
                     </div>
                 </div>
 
+                <!-- Interactive Growth Phase Slider -->
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <label style="font-size: 0.8rem; color: var(--text-muted);">Growth Stage (مرحلہ نمو)</label>
+                        <!-- Badge showing the active slider stage text -->
                         <span id="sliderStageBadge" style="
                             background: rgba(82, 183, 136, 0.2);
                             border: 1px solid var(--accent-green);
