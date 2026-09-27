@@ -43,7 +43,6 @@
             gap: 1.2rem;
         }
 
-        /* Top Navigation Header */
         .top-nav {
             display: flex;
             justify-content: space-between;
@@ -71,7 +70,6 @@
             font-weight: 700;
         }
 
-        /* Search & Filter Section */
         .search-box {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -95,7 +93,6 @@
             color: var(--text-muted);
         }
 
-        /* Mandi Category Pills */
         .category-scroll {
             display: flex;
             gap: 0.6rem;
@@ -122,7 +119,6 @@
             border-color: var(--accent-green);
         }
 
-        /* Mandi Rate Cards */
         .rates-list {
             display: flex;
             flex-direction: column;
@@ -202,7 +198,6 @@
         
         <!-- Top Navigation -->
         <div class="top-nav">
-            <!-- Link Back to Dashboard (05_dashboard.html) -->
             <a href="05_dashboard.html" class="back-btn" title="Back to Dashboard">
                 <svg viewBox="0 0 24 24"><path d="M20,11H7.83L13.42,5.41L12,4L4,12L12,20L13.41,18.59L7.83,13H20V11Z"/></svg>
             </a>
@@ -240,7 +235,6 @@
 
     </div>
     <script>
-    // Default crops with per-mandi (city) rates, yesterday's change, and distance from the farm (current location)
     const cropData = {
         wheat: {
             label: "Wheat (گندم)",
@@ -309,12 +303,10 @@
         const container = document.getElementById('ratesList');
         container.innerHTML = '';
 
-        // Build list of crops matching the active chip filter
         let entries = Object.keys(cropData)
             .filter(key => activeChip === 'all' || activeChip === key)
             .map(key => ({ key, crop: cropData[key], top: highestCity(cropData[key]) }));
 
-        // Apply search: match crop name or any mandi (city) name
         if (query) {
             entries = entries.filter(({ key, crop }) => {
                 const cropMatch = key.includes(query) || crop.label.toLowerCase().includes(query);
@@ -323,7 +315,6 @@
             });
         }
 
-        // Show highest mandi rate first (sort crops by their highest price, descending)
         entries.sort((a, b) => b.top.price - a.top.price);
 
         if (entries.length === 0) {
@@ -355,7 +346,6 @@
         const crop = cropData[cropKey];
         document.getElementById('modalTitle').innerText = crop.label + " Rates by City";
 
-        // Highest to lowest price, with distance from the farm shown below each mandi name
         const sortedCities = [...crop.cities].sort((a, b) => b.price - a.price);
 
         const modalList = document.getElementById('modalRatesList');
@@ -378,6 +368,6 @@
 </script>
 
     <script type="module" src="firebase-init.js"></script>
-    <script src="auth-guard.js"></script>
+    <script src="guest-header.js"></script>
 </body>
 </html>
